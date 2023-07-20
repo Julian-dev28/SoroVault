@@ -2,21 +2,48 @@ name: Rust
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [main]
   pull_request:
-    branches: [ "master" ]
 
 env:
-  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -Wclippy::all -Wclippy::pedantic
 
 jobs:
-  build:
 
+  # complete:
+  #   if: always()
+  #   needs: [fmt, build-and-test]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+  #     run: exit 1
+
+  fmt:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
-    # - name: Build
-    #   run: cargo build --verbose
-    - name: Run tests
-      run: make test
+    - run: rustup update
+    - run: cargo fmt --all --check
+
+  build-and-test:
+    strategy:
+      matrix:
+        sys:
+        - os: ubuntu-latest
+          target: wasm32-unknown-unknown
+          test: false
+        - os: ubuntu-latest
+          target: x86_64-unknown-linux-gnu
+          test: true
+    runs-on: ${{ matrix.sys.os }}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: stellar/actions/rust-cache@main
+    - run: rustup update
+    - run: rustup target add ${{ matrix.sys.target }}
+    - run: cargo clippy --target ${{ matrix.sys.target }} --lib
+    - if: matrix.sys.target != 'wasm32-unknown-unknown'
+      run: cargo clippy --target ${{ matrix.sys.target }} --bins --tests --examples --benches
+    - run: cargo build --target ${{ matrix.sys.target }}
+    - if: matrix.sys.test
+      run: cargo test --target ${{ matrix.sys.target }}
