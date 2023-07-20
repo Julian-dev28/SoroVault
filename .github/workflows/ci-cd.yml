@@ -1,0 +1,19 @@
+name: CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Run inputs.sh in a container
+        run: |
+          docker run --rm -v $(pwd):/app -w /app <container_image> bash ./inputs.sh > output.txt
+          cat output.txt
