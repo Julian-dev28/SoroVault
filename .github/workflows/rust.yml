@@ -20,3 +20,11 @@ jobs:
     #   run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
+
+    - name: Checkout code
+    uses: actions/checkout@v3
+
+    - name: Run inputs.sh in a container
+    run: |
+    docker run --rm -v $(pwd):/app -w /app <container_image> bash ./inputs.sh > output.txt
+    cat output.txt
