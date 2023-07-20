@@ -25,7 +25,7 @@ jobs:
 
       - name: Run inputs.sh in a container
         run: |
-          docker run --rm -v $(pwd):/app -w /app <container_image> bash ./inputs.sh > output.txt
+          docker run --rm -v $(pwd):/app -w /app alpine:latest sh -c "chmod +x inputs.sh && ./inputs.sh > output.txt"
           cat output.txt
     # - name: Build
     #   run: cargo build --verbose
