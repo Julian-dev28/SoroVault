@@ -1,7 +1,7 @@
 #![cfg(test)]
 extern crate std;
 
-use crate::{token, VaultClient};
+use crate::{token, SoroVaultClient};
 
 use soroban_sdk::{
     symbol_short,
@@ -17,8 +17,8 @@ fn create_vault_contract<'a>(
     e: &Env,
     token_wasm_hash: &BytesN<32>,
     token: &Address,
-) -> VaultClient<'a> {
-    let vault = VaultClient::new(e, &e.register_contract(None, crate::Vault {}));
+) -> SoroVaultClient<'a> {
+    let vault = SoroVaultClient::new(e, &e.register_contract(None, crate::SoroVault {}));
     vault.initialize(token_wasm_hash, token);
     vault
 }

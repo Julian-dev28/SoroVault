@@ -113,10 +113,10 @@ pub trait VaultTrait {
     fn get_rsrvs(e: Env) -> i128;
 }
 #[contract]
-struct Vault;
+struct SoroVault;
 
 #[contractimpl]
-impl VaultTrait for Vault {
+impl VaultTrait for SoroVault {
     fn initialize(e: Env, token_wasm_hash: BytesN<32>, token: Address) {
         let share_contract_id = create_contract(&e, token_wasm_hash, &token);
         token::Client::new(&e, &share_contract_id).initialize(
